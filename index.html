@@ -389,22 +389,17 @@
     width: 150px;
     height: 150px;
     margin: 0.5rem auto 1.8rem;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%, var(--void) 0 12%, var(--rose-deep) 13% 55%, var(--plum-light) 56% 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-radius: 22px;
+    overflow: hidden;
+    background: linear-gradient(155deg, rgba(217,143,160,0.16), rgba(74,42,82,0.5));
     box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 0 6px rgba(216,181,121,0.08);
   }
-  .disc.spin{ animation: spin 6s linear infinite; }
-  .disc::after{
-    content: "";
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--gold-soft);
+  .disc img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
-  @keyframes spin{ to{ transform: rotate(360deg); } }
 
   .song-title{
     text-align: center;
@@ -550,12 +545,12 @@
         <div class="close-btn" onclick="openMenu()">✕</div>
       </div>
       <div class="disc" id="disc">
-        <img src="IMG-20260831-WA0020.jpg"/>
+        <img src="IMG-20260831-WA0020.jpg" alt="">
       </div>
       <p class="song-title" id="songTitle">Understand</p>
       <p class="song-caption">keshi</p>
       <!-- name the audio file our-song.mp3 and place it beside this html file; update the title above -->
-      <audio id="player" controls onplay="document.getElementById('disc').classList.add('spin')" onpause="document.getElementById('disc').classList.remove('spin')">
+      <audio id="player" controls>
         <source src="AUD-20260831-WA0018.mp3" type="audio/mpeg">
       </audio>
     </div>
@@ -609,6 +604,38 @@
       layer.appendChild(img);
       setTimeout(() => img.remove(), 2000);
     }
+  }
+
+  // ambient floating hearts — single layer, generated once
+  const heartsLayer = document.getElementById('hearts');
+  const heartChars = ['♥','♡'];
+  for(let i=0;i<10;i++){
+    const el = document.createElement('span');
+    el.textContent = heartChars[i % 2];
+    el.style.left = (5 + Math.random()*90) + '%';
+    el.style.fontSize = (0.8 + Math.random()*0.9) + 'rem';
+    el.style.setProperty('--drift', (Math.random()*40 - 20) + 'px');
+    el.style.animationDuration = (9 + Math.random()*8) + 's';
+    el.style.animationDelay = (Math.random()*10) + 's';
+    heartsLayer.appendChild(el);
+  }
+
+  // ambient night sky — twinkling dots, generated once
+  const skyLayer = document.getElementById('sky');
+  for(let i=0;i<26;i++){
+    const el = document.createElement('span');
+    const size = 1 + Math.random()*2;
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.left = (Math.random()*100) + '%';
+    el.style.top = (Math.random()*55) + '%';
+    el.style.animationDuration = (2.5 + Math.random()*3) + 's';
+    el.style.animationDelay = (Math.random()*4) + 's';
+    skyLayer.appendChild(el);
+  }
+</script>
+</body>
+</html>
   }
 
   // ambient floating hearts — single layer, generated once
