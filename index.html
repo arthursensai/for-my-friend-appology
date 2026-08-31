@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /*
+    PERSONALIZE THIS PAGE
+    - Photos: place files next to this HTML file named photo1.jpg through photo6.jpg
+    - Song: place an mp3 next to this file named our-song.mp3, and change the
+      text inside <p class="song-title" id="songTitle"> below
+  */
+  :root{
+    --void: #0f0813;
+    --plum-deep: #1c1023;
+    --plum: #2f1b38;
+    --plum-light: #4a2a52;
+    --rose: #d98fa0;
+    --rose-deep: #b5687c;
+    --gold: #d8b579;
+    --gold-soft: #e9d3a3;
+    --cream: #f6ece6;
+    --ink: #f1e4e8;
+    --ink-dim: rgba(241,228,232,0.68);
+    --glass: rgba(246,236,230,0.055);
+    --glass-strong: rgba(246,236,230,0.09);
+    --glass-border: rgba(246,236,230,0.14);
+    --shadow: rgba(5,2,8,0.55);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--void);
+    overscroll-behavior: none;
+  }
+
+  body{
+    font-family: 'Quicksand', sans-serif;
+    color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1, h2, .display{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .stage{
+    min-height: 100dvh;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(60% 40% at 80% 8%, rgba(216,181,121,0.14) 0%, rgba(216,181,121,0) 60%),
+      radial-gradient(70% 50% at 15% 0%, rgba(217,143,160,0.22) 0%, rgba(217,143,160,0) 55%),
+      linear-gradient(190deg, var(--plum) 0%, var(--plum-deep) 45%, var(--void) 100%);
+  }
+
+  .screen{
+    min-height: 100dvh;
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8vh 7% 6vh;
+    position: relative;
+    z-index: 2;
+  }
+
+  .screen.active{ display: flex; }
+
+  /* ---------- night sky: twinkling stars, one ambient layer ---------- */
+  .sky{
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .sky span{
+    position: absolute;
+    border-radius: 50%;
+    background: var(--gold-soft);
+    animation: twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%, 100%{ opacity: 0.12; transform: scale(0.8); }
+    50%{ opacity: 0.9; transform: scale(1.15); }
+  }
+
+  /* ---------- floating hearts ambient layer ---------- */
+  .hearts{
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .hearts span{
+    position: absolute;
+    bottom: -10%;
+    font-size: 1.1rem;
+    color: rgba(217,143,160,0.55);
+    animation: float-up linear infinite;
+  }
+  @keyframes float-up{
+    0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10%{ opacity: 0.8; }
+    90%{ opacity: 0.5; }
+    100%{ transform: translateY(-115vh) translateX(var(--drift, 10px)) rotate(20deg); opacity: 0; }
+  }
+
+  /* ---------- confetti burst (real gif hearts) ---------- */
+  .burst{
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+  }
+  .burst img{
+    position: absolute;
+    width: 34px;
+    height: auto;
+    opacity: 0;
+    animation: pop-up 1600ms ease-out forwards;
+  }
+  @keyframes pop-up{
+    0%{ transform: translateY(0) scale(0.3) rotate(0deg); opacity: 0; }
+    12%{ opacity: 1; }
+    100%{ transform: translateY(-70vh) scale(1) rotate(var(--spin, 15deg)); opacity: 0; }
+  }
+
+  /* ---------- screen 1 : question ---------- */
+  #screen-question .envelope-wrap{
+    position: relative;
+    margin-bottom: 2.6rem;
+    animation: settle 900ms cubic-bezier(.2,.8,.2,1) both;
+  }
+  .envelope{
+    width: 132px;
+    height: 92px;
+    display: block;
+  }
+  .charm{
+    position: absolute;
+    width: 46px;
+    top: -30px;
+    right: -22px;
+    animation: bob 3.2s ease-in-out infinite;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+  }
+  @keyframes bob{
+    0%, 100%{ transform: translateY(0) rotate(-4deg); }
+    50%{ transform: translateY(-8px) rotate(4deg); }
+  }
+  @keyframes settle{
+    from{ transform: translateY(-14px) scale(.92); opacity: 0; }
+    to{ transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  #screen-question h1{
+    background: linear-gradient(100deg, var(--cream) 20%, var(--gold-soft) 55%, var(--rose) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 1.9rem;
+    text-align: center;
+    line-height: 1.35;
+    margin: 0 0 0.6rem;
+    animation: settle 900ms 120ms cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  #screen-question .sub{
+    color: var(--ink-dim);
+    text-align: center;
+    font-size: 0.98rem;
+    margin: 0 0 3rem;
+    animation: settle 900ms 220ms cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  .yes-row{
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    width: 100%;
+    max-width: 300px;
+    animation: settle 900ms 320ms cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  button{
+    font-family: 'Quicksand', sans-serif;
+    border: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .btn{
+    padding: 1.05rem 1.4rem;
+    border-radius: 999px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    transition: transform 160ms ease;
+  }
+  .btn:active{ transform: scale(0.96); }
+
+  .btn-primary{
+    background: linear-gradient(120deg, var(--rose) 0%, var(--gold) 100%);
+    color: var(--plum-deep);
+    box-shadow: 0 12px 26px var(--shadow);
+  }
+  .btn-primary.grow{
+    transform: scale(1.05);
+  }
+
+  .btn-secondary{
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--cream);
+    border: 1.5px solid var(--glass-border);
+  }
+
+  /* ---------- screen 2 : menu ---------- */
+  #screen-menu .display{
+    color: var(--cream);
+    font-size: 1.7rem;
+    text-align: center;
+    margin: 0 0 0.4rem;
+  }
+  #screen-menu .sub{
+    color: var(--ink-dim);
+    text-align: center;
+    font-size: 0.95rem;
+    margin: 0 0 2.6rem;
+  }
+
+  .menu-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+    width: 100%;
+  }
+
+  .menu-card{
+    background: var(--glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--cream);
+    text-align: center;
+    transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  }
+  .menu-card:active{
+    transform: scale(0.97);
+    background: var(--glass-strong);
+    box-shadow: 0 8px 24px var(--shadow);
+  }
+
+  .menu-card .icon{ font-size: 1.6rem; }
+  .menu-card span{ font-size: 0.88rem; font-weight: 600; line-height: 1.3; }
+
+  /* ---------- inner screens (letter / gallery / song / promise) ---------- */
+  .inner{
+    width: 100%;
+    background: linear-gradient(175deg, rgba(47,27,56,0.96), rgba(15,8,19,0.98));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--glass-border);
+    border-radius: 26px 26px 0 0;
+    padding: 2.4rem 1.6rem 3rem;
+    margin-top: auto;
+    box-shadow: 0 -12px 40px rgba(0,0,0,0.45);
+    max-height: 88dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .screen[id^="screen-"]:not(#screen-question):not(#screen-menu){
+    justify-content: flex-end;
+    padding: 0;
+  }
+
+  .inner-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.4rem;
+  }
+
+  .inner-head h2{
+    font-size: 1.35rem;
+    color: var(--cream);
+    margin: 0;
+  }
+
+  .close-btn{
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
+    color: var(--cream);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* letter */
+  .letter-body{
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--ink);
+  }
+  .letter-body p{ margin: 0 0 1.1rem; }
+  .signature-row{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.6rem;
+  }
+  .signature{
+    font-family: 'Fraunces', serif;
+    font-style: normal;
+    font-weight: 500;
+    color: var(--rose);
+  }
+  .signature-charm{ width: 22px; height: auto; opacity: 0.9; }
+
+  /* gallery */
+  .gallery-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+  }
+  .photo-slot{
+    aspect-ratio: 4/5;
+    border-radius: 16px;
+    background: linear-gradient(155deg, rgba(217,143,160,0.16), rgba(74,42,82,0.5));
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(246,236,230,0.35);
+    font-size: 1.4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .photo-slot img.real{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+  .gallery-note{
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    margin-top: 1.2rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  /* song */
+  .disc{
+    width: 150px;
+    height: 150px;
+    margin: 0.5rem auto 1.8rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, var(--void) 0 12%, var(--rose-deep) 13% 55%, var(--plum-light) 56% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 0 6px rgba(216,181,121,0.08);
+  }
+  .disc.spin{ animation: spin 6s linear infinite; }
+  .disc::after{
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--gold-soft);
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .song-title{
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    margin: 0 0 0.2rem;
+    color: var(--cream);
+  }
+  .song-caption{
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    margin: 0 0 1.6rem;
+  }
+  audio{
+    width: 100%;
+    border-radius: 999px;
+  }
+
+  /* promise */
+  .promise-body{
+    font-size: 1.02rem;
+    line-height: 1.8;
+    color: var(--ink);
+  }
+  .promise-body p{ margin: 0 0 1rem; }
+
+  .moon{
+    width: 76px;
+    height: 76px;
+    margin: 0.2rem auto 1.8rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 32%, var(--gold-soft) 0%, var(--gold) 55%, #a6813f 100%);
+    box-shadow: 0 0 30px 6px rgba(216,181,121,0.35);
+    animation: glow 3.6s ease-in-out infinite;
+  }
+  @keyframes glow{
+    0%, 100%{ box-shadow: 0 0 24px 4px rgba(216,181,121,0.28); }
+    50%{ box-shadow: 0 0 40px 10px rgba(216,181,121,0.5); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="sky" id="sky"></div>
+  <div class="hearts" id="hearts"></div>
+  <div class="burst" id="burst"></div>
+
+  <!-- SCREEN 1 — the question -->
+  <div class="screen active" id="screen-question">
+    <div class="envelope-wrap">
+      <svg class="envelope" viewBox="0 0 132 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="14" width="128" height="76" rx="10" fill="#1c1023"/>
+        <path d="M2 20 L66 62 L130 20" stroke="#d98fa0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <rect x="2" y="14" width="128" height="76" rx="10" stroke="#d8b579" stroke-width="1.5" fill="none" opacity="0.6"/>
+        <circle cx="66" cy="8" r="7" fill="#d98fa0"/>
+      </svg>
+      <img class="charm" alt="" src="ac5a1d1485ca85cf60927030fcafd79f.jpg">
+    </div>
+    <h1>I have something for you.</h1>
+    <p class="sub">a small apology, wrapped up for you to open</p>
+    <div class="yes-row">
+      <button class="btn btn-primary" onclick="openMenu(event)">Yes</button>
+      <button class="btn btn-primary grow" onclick="openMenu(event)">Yes yes yes</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2 — the menu -->
+  <div class="screen" id="screen-menu">
+    <h2 class="display">Open whichever you like first</h2>
+    <p class="sub">no order, no rules — just for you</p>
+    <div class="menu-grid">
+      <div class="menu-card" onclick="openScreen('screen-gallery')">
+        <div class="icon">📷</div>
+        <span>Us</span>
+      </div>
+      <div class="menu-card" onclick="openScreen('screen-letter')">
+        <div class="icon">💌</div>
+        <span>My apology</span>
+      </div>
+      <div class="menu-card" onclick="openScreen('screen-song')">
+        <div class="icon">🎵</div>
+        <span>Our song</span>
+      </div>
+      <div class="menu-card" onclick="openScreen('screen-promise')">
+        <div class="icon">🤍</div>
+        <span>A promise</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN — gallery -->
+  <div class="screen" id="screen-gallery">
+    <div class="inner">
+      <div class="inner-head">
+        <h2>Us, in pictures</h2>
+        <div class="close-btn" onclick="openMenu()">✕</div>
+      </div>
+      <!-- name files photo1.jpg through photo6.jpg and place them beside this html file -->
+      <div class="gallery-grid" id="galleryGrid">
+        <div class="photo-slot">🤍<img class="real" src="IMG-20260831-WA0009.jpg" alt=""></div>
+        <div class="photo-slot">🤍<img class="real" src="IMG-20260831-WA00010.jpg" alt=""></div>
+        <div class="photo-slot">🤍<img class="real" src="IMG-20260831-WA00011.jpg" alt=""></div>
+        <div class="photo-slot">🤍<img class="real" src="IMG-20260831-WA00012.jpg" alt=""></div>
+        <div class="photo-slot">🤍<img class="real" src="IMG-20260831-WA00015.jpg" alt=""></div>
+        <div class="photo-slot">🤍<img class="real" src="IMG-20260831-WA00016.jpg" alt=""></div>
+      </div>
+      <p class="gallery-note">little moments, side by side</p>
+    </div>
+  </div>
+
+  <!-- SCREEN — letter -->
+  <div class="screen" id="screen-letter">
+    <div class="inner">
+      <div class="inner-head">
+        <h2>For you</h2>
+        <div class="close-btn" onclick="openMenu()">✕</div>
+      </div>
+      <div class="letter-body">
+        <p>I keep replaying it, and every time I do, I land in the same place: I was wrong, and you deserved better from me.</p>
+        <p>The distance between us is already hard enough without me adding to it. You carry so much — your days, your work, your dream of becoming the architect I already believe you'll be — and I should be the easiest part of your life, not another weight.</p>
+        <p>I'm not writing this to be forgiven right away. I'm writing it because you should hear it plainly: I see what I did, I understand why it hurt, and I'm going to be more careful with you — with your time, your trust, your heart — from here on.</p>
+        <p>I still think about that full moon we're waiting for. I meant every part of that promise then, and I mean it more now.</p>
+        <p>Whenever you're ready — not before — I'll be here.</p>
+      </div>
+      <div class="signature-row">
+        <span class="signature">— always yours</span>
+        <img class="signature-charm" alt="" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExejUzN2d0a29keGZjNGI3ZXRqa3AydHlleGJtZmIxeGZtdDdid2NhZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/LLXznKwtjV3YFZdZjJ/giphy.gif">
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN — song -->
+  <div class="screen" id="screen-song">
+    <div class="inner">
+      <div class="inner-head">
+        <h2>Our song</h2>
+        <div class="close-btn" onclick="openMenu()">✕</div>
+      </div>
+      <div class="disc" id="disc"></div>
+      <p class="song-title" id="songTitle">Our Song</p>
+      <p class="song-caption">the one that always brings us back</p>
+      <!-- name the audio file our-song.mp3 and place it beside this html file; update the title above -->
+      <audio id="player" controls onplay="document.getElementById('disc').classList.add('spin')" onpause="document.getElementById('disc').classList.remove('spin')">
+        <source src="our-song.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+  </div>
+
+  <!-- SCREEN — promise -->
+  <div class="screen" id="screen-promise">
+    <div class="inner">
+      <div class="inner-head">
+        <h2>A promise</h2>
+        <div class="close-btn" onclick="openMenu()">✕</div>
+      </div>
+      <div class="moon"></div>
+      <div class="promise-body">
+        <p>I promise to say the hard thing out loud instead of letting it turn into distance between us.</p>
+        <p>I promise to remember that "long distance" already asks enough of you, so I won't be the reason it asks for more.</p>
+        <p>I promise to keep showing up — in the small, boring, everyday ways — not just when I've done something wrong.</p>
+        <p>And I promise that full moon is still coming, whenever life lets it.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const HEART_GIF = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExejUzN2d0a29keGZjNGI3ZXRqa3AydHlleGJtZmIxeGZtdDdid2NhZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/LLXznKwtjV3YFZdZjJ/giphy.gif";
+
+  function openMenu(evt){
+    if(evt) burstHearts(evt.clientX, evt.clientY);
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-menu').classList.add('active');
+  }
+  function openScreen(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // one orchestrated moment: a small burst of heart gifs from the tapped button
+  function burstHearts(x, y){
+    const layer = document.getElementById('burst');
+    const stageRect = document.querySelector('.stage').getBoundingClientRect();
+    const originX = x - stageRect.left;
+    const originY = y - stageRect.top;
+    for(let i = 0; i < 7; i++){
+      const img = document.createElement('img');
+      img.src = HEART_GIF;
+      img.style.left = (originX - 17 + (Math.random()*70 - 35)) + 'px';
+      img.style.top = originY + 'px';
+      img.style.setProperty('--spin', (Math.random()*30 - 15) + 'deg');
+      img.style.animationDelay = (Math.random()*180) + 'ms';
+      layer.appendChild(img);
+      setTimeout(() => img.remove(), 2000);
+    }
+  }
+
+  // ambient floating hearts — single layer, generated once
+  const heartsLayer = document.getElementById('hearts');
+  const heartChars = ['♥','♡'];
+  for(let i=0;i<10;i++){
+    const el = document.createElement('span');
+    el.textContent = heartChars[i % 2];
+    el.style.left = (5 + Math.random()*90) + '%';
+    el.style.fontSize = (0.8 + Math.random()*0.9) + 'rem';
+    el.style.setProperty('--drift', (Math.random()*40 - 20) + 'px');
+    el.style.animationDuration = (9 + Math.random()*8) + 's';
+    el.style.animationDelay = (Math.random()*10) + 's';
+    heartsLayer.appendChild(el);
+  }
+
+  // ambient night sky — twinkling dots, generated once
+  const skyLayer = document.getElementById('sky');
+  for(let i=0;i<26;i++){
+    const el = document.createElement('span');
+    const size = 1 + Math.random()*2;
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.left = (Math.random()*100) + '%';
+    el.style.top = (Math.random()*55) + '%';
+    el.style.animationDuration = (2.5 + Math.random()*3) + 's';
+    el.style.animationDelay = (Math.random()*4) + 's';
+    skyLayer.appendChild(el);
+  }
+
+  // if a real photo exists, show it instead of the placeholder icon
+  document.querySelectorAll('.photo-slot img.real').forEach(img => {
+    img.addEventListener('load', () => {
+      img.style.display = 'block';
+    });
+  });
+</script>
+
+</body>
+</html>
